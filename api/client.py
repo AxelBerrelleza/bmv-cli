@@ -25,3 +25,15 @@ def request_prices(symbols: list[str]):
 def request_currencies():
     response = requests.get(get_base_url("divisas", withExchange=False))
     return response.json()
+
+
+def request_credits():
+    response = requests.get(get_base_url("creditos", withExchange=False))
+    return response.json()
+
+
+def request_emisoras(letra: str, mercado: str = "local"):
+    response = requests.get(
+        get_base_url("emisoras", withExchange=False) + f"&letra={letra}&mercado={mercado}"
+    )
+    return response.json()
