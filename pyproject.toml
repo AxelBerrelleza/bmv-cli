@@ -1,12 +1,105 @@
 [project]
-name = "typer-migration-and-uv-implement"
+name = "bmv"
 version = "0.1.0"
-description = "Add your description here"
+description = "CLI tool for Mexican stock market (BMV/BIVA) data via DataBursatil API"
 readme = "README.md"
 requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Axel Berrelleza" }
+]
 dependencies = [
     "python-dotenv>=1.2.1",
     "requests>=2.32.5",
     "rich>=14.2.0",
     "typer>=0.20.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "requests-mock>=1.12.1",
+    "ruff>=0.9.0",
+    "mypy>=1.15.0",
+    "types-requests>=2.32.0.20241016",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["commands*", "api*"]
+
+# ==============================================================================
+# Ruff Configuration (Formatting & Linting)
+# ==============================================================================
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # Pyflakes
+    "I",     # isort (import sorting)
+    "UP",    # pyupgrade (modern Python 3.12+ syntax)
+    "B",     # flake8-bugbear
+    "SIM",   # flake8-simplify
+    "RUF",   # Ruff-specific rules
+    "TCH",   # flake8-type-checking
+]
+ignore = [
+    "E501",  # Line too long (handled by ruff format)
+    "B008",  # Do not perform function calls in argument defaults (needed for Typer)
+    "B904",  # Within an except clause, raise exceptions with from err
+    "B905",  # zip() without an explicit strict= parameter
+    "RUF012", # Mutable default value for class attribute
+    "SIM113", # Use enumerate() for index variable in for loop
+    "SIM117", # Combine nested with statements
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["commands", "api"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+# ==============================================================================
+# Mypy Configuration (Static Analysis & Type Checking)
+# ==============================================================================
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = false
+warn_unused_configs = true
+warn_unused_ignores = true
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = "commands.tests.*"
+ignore_errors = true
+
+# ==============================================================================
+# Pytest Configuration
+# ==============================================================================
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["commands/tests"]
+log_cli = true
+log_cli_level = "INFO"
+addopts = "-v --tb=short"

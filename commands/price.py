@@ -1,5 +1,3 @@
-from typing import List
-
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -10,7 +8,7 @@ app = typer.Typer()
 
 
 @app.command()
-def price(symbols: List[str]):
+def price(symbols: list[str]):
     response = request_prices(symbols)
     table = Table(
         "simbolo",
@@ -27,10 +25,7 @@ def price(symbols: List[str]):
         "fecha",
     )
     for symbol, data in response.items():
-        if data["bmv"]["f"] > data["biva"]["f"]:
-            row = data["bmv"]
-        else:
-            row = data["biva"]
+        row = data["bmv"] if data["bmv"]["f"] > data["biva"]["f"] else data["biva"]
         table.add_row(symbol, *[str(value) for value in row.values()])
 
     console = Console()
