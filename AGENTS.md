@@ -1,4 +1,4 @@
-# cli-finance-py — agent instructions
+# bmv-cli — agent instructions
 
 ## Setup
 

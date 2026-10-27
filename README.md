@@ -73,8 +73,8 @@ bmv dividend WALMEX*
 
 ```bash
 # Clone and setup
-git clone https://github.com/aberrelleza/cli-finance-py.git
-cd cli-finance-py
+git clone https://github.com/AxelBerrelleza/bmv-cli.git
+cd bmv-cli
 uv sync --extra dev
 
 # Run quality gates

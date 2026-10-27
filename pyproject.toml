@@ -29,8 +29,8 @@ dependencies = [
 bmv = "bmv_cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/aberrelleza/cli-finance-py"
-Issues = "https://github.com/aberrelleza/cli-finance-py/issues"
+Homepage = "https://github.com/AxelBerrelleza/bmv-cli"
+Issues = "https://github.com/AxelBerrelleza/bmv-cli/issues"
 
 [project.optional-dependencies]
 dev = [
