@@ -1,11 +1,11 @@
 import typer
 
-from commands.credits import app as credits
-from commands.currencies import app as currencies
-from commands.dividend import app as dividend
-from commands.hello import app as hello
-from commands.price import app as price
-from commands.search import app as search
+from bmv_cli.commands.credits import app as credits
+from bmv_cli.commands.currencies import app as currencies
+from bmv_cli.commands.dividend import app as dividend
+from bmv_cli.commands.hello import app as hello
+from bmv_cli.commands.price import app as price
+from bmv_cli.commands.search import app as search
 
 app = typer.Typer()
 app.add_typer(hello)

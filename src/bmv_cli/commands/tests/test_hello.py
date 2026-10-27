@@ -1,6 +1,6 @@
 from typer.testing import CliRunner
 
-from commands.hello import app
+from bmv_cli.commands.hello import app
 
 
 def test_hello_command():

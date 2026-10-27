@@ -1,8 +1,8 @@
 import pytest
 from typer.testing import CliRunner
 
-from commands.currencies import app
-from commands.tests.fixtures import currencies_response
+from bmv_cli.commands.currencies import app
+from bmv_cli.commands.tests.fixtures import currencies_response
 
 runner = CliRunner()
 

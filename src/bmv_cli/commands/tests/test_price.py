@@ -1,8 +1,8 @@
 import pytest
 from typer.testing import CliRunner
 
-from commands.price import app
-from commands.tests.fixtures import prices_response
+from bmv_cli.commands.price import app
+from bmv_cli.commands.tests.fixtures import prices_response
 
 runner = CliRunner()
 

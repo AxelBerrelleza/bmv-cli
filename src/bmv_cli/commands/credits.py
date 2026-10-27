@@ -1,7 +1,7 @@
 import typer
 from rich.console import Console
 
-from api.client import request_credits
+from bmv_cli.api.client import request_credits
 
 app = typer.Typer()
 

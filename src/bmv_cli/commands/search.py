@@ -2,7 +2,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from api.client import request_emisoras
+from bmv_cli.api.client import request_emisoras
 
 app = typer.Typer()
 
