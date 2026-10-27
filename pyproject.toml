@@ -1,12 +1,22 @@
 [project]
-name = "bmv"
+name = "bmv-cli"
 version = "0.1.0"
 description = "CLI tool for Mexican stock market (BMV/BIVA) data via DataBursatil API"
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "Axel Berrelleza" }
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Terminals",
 ]
 dependencies = [
     "python-dotenv>=1.2.1",
@@ -14,6 +24,13 @@ dependencies = [
     "rich>=14.2.0",
     "typer>=0.20.0",
 ]
+
+[project.scripts]
+bmv = "bmv_cli.main:app"
+
+[project.urls]
+Homepage = "https://github.com/aberrelleza/cli-finance-py"
+Issues = "https://github.com/aberrelleza/cli-finance-py/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -25,12 +42,11 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["commands*", "api*"]
+where = ["src"]
 
 # ==============================================================================
 # Ruff Configuration (Formatting & Linting)
@@ -69,7 +85,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["commands", "api"]
+known-first-party = ["bmv_cli"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -91,7 +107,7 @@ no_implicit_optional = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = "commands.tests.*"
+module = "bmv_cli.commands.tests.*"
 ignore_errors = true
 
 # ==============================================================================
@@ -99,7 +115,7 @@ ignore_errors = true
 # ==============================================================================
 [tool.pytest.ini_options]
 minversion = "8.0"
-testpaths = ["commands/tests"]
+testpaths = ["src/bmv_cli/commands/tests"]
 log_cli = true
 log_cli_level = "INFO"
 addopts = "-v --tb=short"

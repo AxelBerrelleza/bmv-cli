@@ -10,12 +10,12 @@ cp .env.sample .env  # then set BMV_API_TOKEN
 ## Run
 
 ```bash
-uv run python main.py --help
-uv run python main.py price GFNORTEO WALMEX
-uv run python main.py currencies
-uv run python main.py credits
-uv run python main.py search WALMEX
-uv run python main.py dividend FMTY14
+uv run bmv --help
+uv run bmv price GFNORTEO WALMEX
+uv run bmv currencies
+uv run bmv credits
+uv run bmv search WALMEX
+uv run bmv dividend FMTY14
 ```
 
 ## Test & Quality Gates
@@ -23,36 +23,36 @@ uv run python main.py dividend FMTY14
 ```bash
 uv run ruff format --check .
 uv run ruff check .
-uv run mypy commands api
+uv run mypy src/bmv_cli/api src/bmv_cli/commands
 uv run pytest
 ```
 
 ## Architecture
 
-- **CLI framework**: [Typer](https://typer.tiangolo.com/) — sub-commands registered in `main.py` from `commands/hello`, `commands/price`, `commands/currencies`, `commands/credits`, `commands/search`, and `commands/dividend`
-- **API**: [DataBursatil](https://www.databursatil.com/docs.html) v2 (`token` from `BMV_API_TOKEN` env var, loaded via `dotenv` in `api/client.py`). Base URL: `https://api.databursatil.com/v2/`
+- **CLI framework**: [Typer](https://typer.tiangolo.com/) — sub-commands registered in `src/bmv_cli/main.py` from `bmv_cli.commands.hello`, `bmv_cli.commands.price`, `bmv_cli.commands.currencies`, `bmv_cli.commands.credits`, `bmv_cli.commands.search`, and `bmv_cli.commands.dividend`
+- **API**: [DataBursatil](https://www.databursatil.com/docs.html) v2 (`token` from `BMV_API_TOKEN` env var, loaded via `dotenv` in `bmv_cli.api.client`). Base URL: `https://api.databursatil.com/v2/`
   - Endpoints used: `cotizaciones`, `divisas`, `creditos`, `emisoras`
   - Auth: token query parameter (`?token=...`)
   - Docs: <https://www.databursatil.com/docs.html>
 - **Display**: Rich tables for terminal output
 - **Package structure**:
-  - `api/` — HTTP client for DataBursatil API
-  - `commands/` — Typer sub-command modules (one `app = typer.Typer()` per file)
-  - `commands/tests/` — pytest test suite (co-located with commands)
-  - `main.py` — CLI entry point, registers all sub-command apps
+  - `src/bmv_cli/api/` — HTTP client for DataBursatil API
+  - `src/bmv_cli/commands/` — Typer sub-command modules (one `app = typer.Typer()` per file)
+  - `src/bmv_cli/commands/tests/` — pytest test suite (co-located with commands)
+  - `src/bmv_cli/main.py` — CLI entry point, registers all sub-command apps
 
 ## Testing Conventions
 
 - Uses `requests-mock` and `typer.testing.CliRunner`
-- Test fixtures live in `commands/tests/fixtures/`
+- Test fixtures live in `src/bmv_cli/commands/tests/fixtures/`
 - Test files follow `test_<module>.py` naming
 
 ### Using Test Fixtures
 
-Fixtures provide mock API responses for testing. Import from `commands.tests.fixtures`:
+Fixtures provide mock API responses for testing. Import from `bmv_cli.commands.tests.fixtures`:
 
 ```python
-from commands.tests.fixtures import (
+from bmv_cli.commands.tests.fixtures import (
     prices_response,
     currencies_response,
     credits_response,
@@ -83,7 +83,7 @@ Use `typer.testing.CliRunner` to invoke commands and verify output:
 
 ```python
 from typer.testing import CliRunner
-from commands.price import app
+from bmv_cli.commands.price import app
 
 runner = CliRunner()
 
@@ -103,8 +103,8 @@ def test_single_symbol_price(mock_prices_api):
 ```python
 import pytest
 from typer.testing import CliRunner
-from commands.mycommand import app
-from commands.tests.fixtures import my_fixture
+from bmv_cli.commands.mycommand import app
+from bmv_cli.commands.tests.fixtures import my_fixture
 
 runner = CliRunner()
 
@@ -126,7 +126,7 @@ def test_my_command(mock_api):
 
 - **Formatting**: `uv run ruff format .` (enforces PEP 8, line length 100)
 - **Linting**: `uv run ruff check --fix .` (safe auto-fixes enabled)
-- **Static Typing**: `uv run mypy commands api`
+- **Static Typing**: `uv run mypy src/bmv_cli/api src/bmv_cli/commands`
 - **Testing**: `uv run pytest`
 - Always verify all four quality gates pass cleanly before finishing any task.
 
@@ -135,5 +135,5 @@ def test_my_command(mock_api):
 - Python 3.12+ with `uv` for dependency management
 - Double quotes, 100-char line length
 - `from __future__ import annotations` not required (3.12+ has modern syntax)
-- Imports sorted via ruff/isort; first-party groups: `commands`, `api`
+- Imports sorted via ruff/isort; first-party groups: `bmv_cli`
 - Typer argument defaults with `typer.Option(...)` are excluded from B008
