@@ -18,6 +18,11 @@ jobs:
       tag: ${{ steps.resolve.outputs.tag }}
       sha: ${{ steps.resolve.outputs.sha }}
     steps:
+      # Checkout first: gives the job a git context (origin remote with auth)
+      # so the resolve step can query tags via ls-remote.
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
       # Tags created by release-please use GITHUB_TOKEN, whose events never
       # trigger other workflows. Those releases are picked up via the
       # workflow_run trigger instead; hand-pushed v* tags arrive via the
@@ -54,7 +59,7 @@ jobs:
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "Publishing $TAG at $SHA"
 
-      - name: Checkout
+      - name: Checkout release commit
         if: steps.resolve.outputs.tag
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
