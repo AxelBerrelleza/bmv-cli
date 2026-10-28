@@ -34,6 +34,22 @@ These gates also run automatically in CI on every push and pull request via `.gi
 - **Canonical build command**: `uv build --no-sources` — produces both a source distribution (`bmv_cli-<version>.tar.gz`) and a wheel (`bmv_cli-<version>-py3-none-any.whl`) in `dist/`.
 - **Backend pin maintenance**: The `[build-system]` in `pyproject.toml` pins `uv_build>=0.13.6,<0.14`. When uv releases a new major version, raise the upper bound (e.g., `<0.15` for uv 1.x) to stay compatible. This follows uv's versioning policy where the build backend tracks uv's major releases.
 
+## Releases
+
+Releases are fully automated — never edit the version by hand:
+
+1. Merge `feat:`/`fix:` commits to `main` → `release-please.yml` opens/updates a release PR (bumps `version` in `pyproject.toml`, regenerates `CHANGELOG.md`)
+2. Merge the release PR → a `vX.Y.Z` tag + GitHub Release are created
+3. The tag triggers `publish.yml`: build job (gates smoke + `uv build --no-sources` + tag↔version guard) → publish job (`uv publish` to PyPI via **Trusted Publishing**, then artifacts attached to the GitHub Release)
+4. The publish job pauses in the `pypi` environment until a reviewer approves the deployment
+
+**Hard constraints (PyPI trusted-publisher binding — renaming either breaks publishing authentication):**
+- The publish workflow filename must remain exactly `publish.yml`
+- The GitHub environment must remain exactly `pypi`
+- The registered trusted publisher is: project `bmv-cli`, owner `AxelBerrelleza`, repository `bmv-cli`, workflow `publish.yml`, environment `pypi`
+
+First install from PyPI: `uv tool install bmv-cli` → command `bmv`. No API tokens exist anywhere — publishing authenticates exclusively via OIDC trusted publishing.
+
 ## Architecture
 
 - **CLI framework**: [Typer](https://typer.tiangolo.com/) — sub-commands registered in `src/bmv_cli/main.py` from `bmv_cli.commands.hello`, `bmv_cli.commands.price`, `bmv_cli.commands.currencies`, `bmv_cli.commands.credits`, `bmv_cli.commands.search`, and `bmv_cli.commands.dividend`
