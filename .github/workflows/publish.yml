@@ -3,6 +3,10 @@ name: Publish to PyPI
 on:
   push:
     tags: ["v*"]
+  workflow_run:
+    workflows: ["Release Please"]
+    types: [completed]
+    branches: [main]
 
 jobs:
   build:
@@ -10,41 +14,92 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      sha: ${{ steps.resolve.outputs.sha }}
     steps:
+      # Tags created by release-please use GITHUB_TOKEN, whose events never
+      # trigger other workflows. Those releases are picked up via the
+      # workflow_run trigger instead; hand-pushed v* tags arrive via the
+      # push trigger. Both are resolved to (tag, sha) here.
+      - name: Resolve release tag
+        id: resolve
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = "workflow_run" ]; then
+            if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+              echo "Release Please run did not succeed — nothing to publish."
+              exit 0
+            fi
+            SHA="${{ github.event.workflow_run.head_sha }}"
+            # Match the tag whose commit (or annotated-tag dereference) is SHA
+            TAG=$(git ls-remote --tags origin 'refs/tags/v*' \
+              | awk -v sha="$SHA" '
+                  $1 == sha {
+                    ref = $2
+                    gsub(/\^\{\}$/, "", ref)
+                    gsub(/^refs\/tags\//, "", ref)
+                    print ref
+                    exit
+                  }')
+            if [ -z "$TAG" ]; then
+              echo "No v* tag points at this commit — nothing to publish."
+              exit 0
+            fi
+          else
+            SHA="$GITHUB_SHA"
+            TAG="$GITHUB_REF_NAME"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Publishing $TAG at $SHA"
+
       - name: Checkout
+        if: steps.resolve.outputs.tag
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ steps.resolve.outputs.sha }}
 
       - name: Install uv
+        if: steps.resolve.outputs.tag
         uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
         with:
           version: "0.12.10"
           enable-cache: true
 
       - name: Install Python (respects .python-version)
+        if: steps.resolve.outputs.tag
         run: uv python install
 
       - name: Sync dependencies
+        if: steps.resolve.outputs.tag
         run: uv sync --extra dev
 
       - name: Test
+        if: steps.resolve.outputs.tag
         run: uv run pytest
 
       - name: Verify tag matches project version
+        if: steps.resolve.outputs.tag
+        env:
+          RELEASE_TAG: ${{ steps.resolve.outputs.tag }}
         run: |
           uv run python - <<'EOF'
           import os, tomllib
 
           with open("pyproject.toml", "rb") as f:
               version = tomllib.load(f)["project"]["version"]
-          tag = os.environ["GITHUB_REF_NAME"].removeprefix("v")
+          tag = os.environ["RELEASE_TAG"].removeprefix("v")
           if tag != version:
               raise SystemExit(f"Tag v{tag} does not match project version {version}")
           EOF
 
       - name: Build sdist and wheel
+        if: steps.resolve.outputs.tag
         run: uv build --no-sources
 
       - name: Upload distributions
+        if: steps.resolve.outputs.tag
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
@@ -53,6 +108,7 @@ jobs:
   publish:
     name: Upload to PyPI (trusted publishing)
     needs: build
+    if: needs.build.outputs.tag
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -78,9 +134,10 @@ jobs:
       - name: Attach distributions to the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY"
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/* --repo "$GITHUB_REPOSITORY"
           else
-            echo "No GitHub Release found for $GITHUB_REF_NAME (expected for non-release-please tags) — skipping."
+            echo "No GitHub Release found for $RELEASE_TAG (expected for non-release-please tags) — skipping."
           fi
