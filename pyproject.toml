@@ -42,11 +42,8 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
 
 # ==============================================================================
 # Ruff Configuration (Formatting & Linting)

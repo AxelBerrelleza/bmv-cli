@@ -27,6 +27,13 @@ uv run mypy src/bmv_cli/api src/bmv_cli/commands
 uv run pytest
 ```
 
+These gates also run automatically in CI on every push and pull request via `.github/workflows/ci.yml` — when a gate command changes, update **both** this documentation and the workflow together so they stay identical.
+
+## Build
+
+- **Canonical build command**: `uv build --no-sources` — produces both a source distribution (`bmv_cli-<version>.tar.gz`) and a wheel (`bmv_cli-<version>-py3-none-any.whl`) in `dist/`.
+- **Backend pin maintenance**: The `[build-system]` in `pyproject.toml` pins `uv_build>=0.13.6,<0.14`. When uv releases a new major version, raise the upper bound (e.g., `<0.15` for uv 1.x) to stay compatible. This follows uv's versioning policy where the build backend tracks uv's major releases.
+
 ## Architecture
 
 - **CLI framework**: [Typer](https://typer.tiangolo.com/) — sub-commands registered in `src/bmv_cli/main.py` from `bmv_cli.commands.hello`, `bmv_cli.commands.price`, `bmv_cli.commands.currencies`, `bmv_cli.commands.credits`, `bmv_cli.commands.search`, and `bmv_cli.commands.dividend`
