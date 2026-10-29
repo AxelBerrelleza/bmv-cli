@@ -29,6 +29,8 @@ uv run pytest
 
 These gates also run automatically in CI on every push and pull request via `.github/workflows/ci.yml` — when a gate command changes, update **both** this documentation and the workflow together so they stay identical.
 
+**Runner tier**: all Linux GitHub-hosted jobs across `.github/workflows/ci.yml`, `publish.yml`, and `release-please.yml` run on `runs-on: ubuntu-24.04` (pinned OS, not the floating `ubuntu-latest` label, which GitHub repoints to newer Ubuntu versions — e.g. 26.04 in Nov 2026 — silently). Changes to the runner tier must update **all** three workflows and this documentation together. Genuinely lightweight one-off automation jobs may opt into `ubuntu-slim`, but gates and publish jobs must stay on the pinned VM tier.
+
 ## Build
 
 - **Canonical build command**: `uv build --no-sources` — produces both a source distribution (`bmv_cli-<version>.tar.gz`) and a wheel (`bmv_cli-<version>-py3-none-any.whl`) in `dist/`.
