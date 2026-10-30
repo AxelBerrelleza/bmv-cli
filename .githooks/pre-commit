@@ -1,0 +1,10 @@
+#!/bin/sh
+# Public-repo guard: block commits that leak secrets and commits that leave
+# planning artifacts structurally invalid.
+set -e
+
+echo "pre-commit: gitleaks (staged changes)..."
+gitleaks protect --staged --no-banner --redact
+
+echo "pre-commit: openspec validate..."
+openspec validate --all
