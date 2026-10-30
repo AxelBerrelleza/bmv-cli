@@ -1,0 +1,7 @@
+schema: spec-driven
+created: 2026-10-27
+goal: "Make the repo a publishable package: src/bmv_cli layout, entry point,
+  LICENSE, README, classifiers"
+initiative:
+  store: publish-bmv-cli
+  id: publish-bmv-cli

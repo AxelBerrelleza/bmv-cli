@@ -1,0 +1,36 @@
+schema: spec-driven
+
+# Project context (injected into every artifact's prompt)
+context: |
+  This repository is PUBLIC on GitHub (AxelBerrelleza/bmv-cli): everything committed
+  here is world-readable. Never put secrets, tokens, credentials, private URLs,
+  personal data, or internal-only/unreleased information into planning artifacts or
+  code. Reference public resources only.
+
+rules:
+  proposal:
+    - State what is out of scope explicitly
+  specs:
+    - Requirements describe observable behavior of the public bmv-cli CLI only
+  tasks:
+    - Every task group lands its own tests and documentation updates
+
+operations:
+  apply:
+    guidance:
+      - >-
+        Before declaring verification complete, run `gitleaks detect --no-banner --redact`
+        over the worktree, and fix any finding. This repo is public; a leaked secret is
+        a real incident, not a lint issue.
+  archive:
+    guidance:
+      - >-
+        Run `gitleaks detect --no-banner --redact` over the change folder and the change's
+        code diff before archiving; never archive a change with findings.
+      - >-
+        Archive convention - run `openspec archive` on main after the change's PR merges,
+        as a small follow-up commit.
+      - >-
+        If another archived change modified the same requirement since this change was
+        authored, re-check that requirement (`openspec show <change> --diff`) before
+        archiving so the delta does not silently revert shipped scenarios.

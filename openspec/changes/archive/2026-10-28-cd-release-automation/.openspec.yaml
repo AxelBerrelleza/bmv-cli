@@ -1,0 +1,7 @@
+schema: spec-driven
+created: 2026-10-27
+goal: "Automate releases: Release Please PRs + tag-triggered trusted publishing
+  to PyPI"
+initiative:
+  store: publish-bmv-cli
+  id: publish-bmv-cli
