@@ -66,6 +66,32 @@ First install from PyPI: `uv tool install bmv-cli` → command `bmv`. No API tok
   - `src/bmv_cli/commands/tests/` — pytest test suite (co-located with commands)
   - `src/bmv_cli/main.py` — CLI entry point, registers all sub-command apps
 
+## OpenSpec Planning (in-repo)
+
+Planning lives in this repo's `openspec/` folder, tracked in git: `openspec/specs/` is the
+source of truth, `openspec/changes/` holds in-flight and archived changes, and
+`openspec/initiatives/` holds cross-change coordination docs. Change folders ride the code
+branch, so every PR reviews the plan and the code together. A plan that emerges from work in
+flight may ride that work's PR as a follow-up, even ahead of its own implementation.
+
+Conventions:
+
+1. One change per branch (`change/<name>`, where the branch name is the OpenSpec change name)
+   and per worktree; one writer per change folder. Record ownership on the Orca card:
+   `orca worktree set --worktree active --comment "change: <name>"`.
+2. Cross-worktree context travels through git: commit the change folder to its branch and
+   push so other worktrees can see it. To explore or continue an existing change, create the
+   worktree from its branch (`orca worktree create --base-branch change/<name> …`).
+3. Archive convention: after the change's PR merges, run `openspec archive <name>` on `main`
+   as a small follow-up commit.
+4. The repo is **public**: never write secrets, tokens, private URLs, personal data, or
+   internal-only information into planning artifacts or code. Run `gitleaks detect --no-banner
+   --redact` before verification/archive (pre-commit hook + CI enforce this; enable the hook
+   once per clone with `git config core.hooksPath .githooks`).
+5. If two changes modify the same requirement, re-check it with
+   `openspec show <change> --diff` and re-sync before archiving — OpenSpec archive replaces
+   whole requirement blocks and can silently revert scenarios.
+
 ## Testing Conventions
 
 - Uses `requests-mock` and `typer.testing.CliRunner`

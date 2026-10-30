@@ -1,0 +1,13 @@
+version: 1
+id: publish-bmv-cli
+title: Publish bmv-cli to PyPI with CI/CD
+summary: "Coordinate four changes to make cli-finance-py a publishable PyPI
+  package (bmv-cli, command bmv): 1) restructure to src/bmv_cli layout with
+  entry point/LICENSE/README, 2) adopt uv_build backend dropping setuptools, 3)
+  CI quality gates, 4) CD release automation with Release Please + trusted
+  publishing. Includes user-owned manual tasks (PyPI account, trusted publisher
+  registration)."
+status: complete
+created: 2026-10-27
+owners: []
+metadata: {}

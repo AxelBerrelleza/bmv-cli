@@ -1,0 +1,6 @@
+schema: spec-driven
+created: 2026-10-27
+goal: Drop setuptools, adopt uv_build as the build backend
+initiative:
+  store: publish-bmv-cli
+  id: publish-bmv-cli
