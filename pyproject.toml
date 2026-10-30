@@ -1,6 +1,6 @@
 [project]
 name = "bmv-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "CLI tool for Mexican stock market (BMV/BIVA) data via DataBursatil API"
 readme = "README.md"
 requires-python = ">=3.12"
