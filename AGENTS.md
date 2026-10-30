@@ -71,7 +71,8 @@ First install from PyPI: `uv tool install bmv-cli` → command `bmv`. No API tok
 Planning lives in this repo's `openspec/` folder, tracked in git: `openspec/specs/` is the
 source of truth, `openspec/changes/` holds in-flight and archived changes, and
 `openspec/initiatives/` holds cross-change coordination docs. Change folders ride the code
-branch, so every PR reviews the plan and the code together.
+branch, so every PR reviews the plan and the code together. A plan that emerges from work in
+flight may ride that work's PR as a follow-up, even ahead of its own implementation.
 
 Conventions:
 
